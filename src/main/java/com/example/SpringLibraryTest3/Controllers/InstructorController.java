@@ -27,9 +27,9 @@ public class InstructorController {
     public ResponseEntity<String> LoginInstructor(@RequestBody InstructorLoginDto loginData) {
         return instructorService.LoginInstructor(loginData);
     }
-    @PostMapping("/createCourse")
-    public ResponseEntity<String>CreateCourse(@RequestBody CreateCourseDto courseData){
-        return instructorService.CreateCourse(courseData);
+    @PostMapping("/{instructorId}/courses")
+    public ResponseEntity<String> createCourse(@PathVariable int instructorId, @RequestBody CreateCourseDto courseDto) {
+        return instructorService.CreateCourse(courseDto, instructorId);
     }
     @PutMapping ("updateCourse/{id}")
     public ResponseEntity<String>UpdateCourse(@PathVariable("id") int id,@RequestBody CreateCourseDto courseData){

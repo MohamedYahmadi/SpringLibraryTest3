@@ -62,9 +62,13 @@ public class StudentService {
         return ResponseEntity.status(404).body("Student not found");
     }
 }
-public ResponseEntity<Student>getStudentProfile(int studentId){
-        Optional<Student>studentOptional = studentRepository.findById(studentId);
+public ResponseEntity<Student> getStudentProfile(int studentId) {
+    Optional<Student> studentOptional = studentRepository.findById(studentId);
+    if (studentOptional.isPresent()) {
         return ResponseEntity.ok(studentOptional.get());
+    } else {
+        return ResponseEntity.status(404).body(null);
+    }
 }
 
 }

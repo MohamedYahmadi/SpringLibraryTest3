@@ -46,17 +46,21 @@ public class InstructorService {
             return ResponseEntity.status(401).body("invalid email or password");
         }
     }
-    public ResponseEntity<String>CreateCourse(CreateCourseDto courseData){
-        Courses courses =new Courses(
-                courseData.getTitle(),
-                courseData.getDescription(),
-                courseData.getPrice(),
-                courseData.getCategory()
-
-        );
-        courseRepository.save(courses);
-        return ResponseEntity.ok("course created Succsefully");
-    }
+   public ResponseEntity<String> CreateCourse(CreateCourseDto courseData, int instructorId) {
+       Optional<Instructor> instructor = instructorRepository.findById(instructorId);
+       if (instructor.isEmpty()) {
+           return ResponseEntity.status(404).body("Instructor with the id: " + instructorId + " not found");
+       }
+       Courses courses = new Courses(
+               courseData.getTitle(),
+               courseData.getDescription(),
+               courseData.getPrice(),
+               courseData.getCategory()
+       );
+       courses.setInstructor(instructor.get());
+       courseRepository.save(courses);
+       return ResponseEntity.ok("Course created successfully");
+   }
 
     public ResponseEntity<String>UpdateCourse( int id ,CreateCourseDto courseData){
         Optional<Courses> course =courseRepository.findById(id);
