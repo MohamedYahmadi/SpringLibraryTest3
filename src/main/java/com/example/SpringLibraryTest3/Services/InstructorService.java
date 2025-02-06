@@ -80,9 +80,16 @@ public class InstructorService {
     public ResponseEntity<String>deleteCourse(int id){
 if (!courseRepository.existsById(id)){
 return ResponseEntity.status(404).body(" Course with the id : "+id+" does not exist");
-
 }
 courseRepository.deleteById(id);
         return ResponseEntity.ok(" Course with the id : "+id+" has been deleted successfuly");
+    }
+   public ResponseEntity<Instructor> getInstructorProfile(int instructorId) {
+        Optional<Instructor> instructorOptional = instructorRepository.findById(instructorId);
+        if (instructorOptional.isPresent()) {
+            return ResponseEntity.ok(instructorOptional.get());
+        } else {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 }
