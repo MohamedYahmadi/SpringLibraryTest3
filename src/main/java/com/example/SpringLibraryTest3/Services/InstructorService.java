@@ -75,7 +75,6 @@ public class InstructorService {
 
 
         return  ResponseEntity.ok(" Course with the id : "+id+" has been updated successfuly");
-
     }
     public ResponseEntity<String>deleteCourse(int id){
 if (!courseRepository.existsById(id)){

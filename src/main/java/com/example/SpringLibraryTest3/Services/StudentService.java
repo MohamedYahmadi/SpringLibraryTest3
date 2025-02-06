@@ -1,6 +1,7 @@
 package com.example.SpringLibraryTest3.Services;
 
 import com.example.SpringLibraryTest3.Dto.AddbalanceDto;
+import com.example.SpringLibraryTest3.Dto.CreateCourseDto;
 import com.example.SpringLibraryTest3.Dto.StudentLoginDto;
 import com.example.SpringLibraryTest3.Dto.StudentSignUpDto;
 import com.example.SpringLibraryTest3.Entities.Courses;
@@ -47,6 +48,9 @@ public class StudentService {
             return ResponseEntity.status(401).body("invalid email or password");
         }
     }
+
+
+
     public List<Courses>getAllCourse(){
         return courseRepository.findAll();
     }
@@ -62,6 +66,8 @@ public class StudentService {
         return ResponseEntity.status(404).body("Student not found");
     }
 }
+
+
 public ResponseEntity<Student> getStudentProfile(int studentId) {
     Optional<Student> studentOptional = studentRepository.findById(studentId);
     if (studentOptional.isPresent()) {
@@ -69,6 +75,15 @@ public ResponseEntity<Student> getStudentProfile(int studentId) {
     } else {
         return ResponseEntity.status(404).body(null);
     }
+}
+public ResponseEntity<Courses>getCourseByName(String title){
+        Optional<Courses>coursesOptional=courseRepository.findByTitle(title);
+        if (coursesOptional.isPresent()){
+            return ResponseEntity.ok(coursesOptional.get());
+
+        }else{
+            return ResponseEntity.status(404).body(null);
+        }
 }
 
 }

@@ -44,5 +44,9 @@ public class StudentController {
     public ResponseEntity<Student>getStudentProfile(@PathVariable int studentId){
         return studentService.getStudentProfile(studentId);
     }
+   @GetMapping("course/{title}")
+    public ResponseEntity<Courses> getCourseByName(@PathVariable String title) {
+        return studentService.getCourseByName(title);
+    }
 
 }
