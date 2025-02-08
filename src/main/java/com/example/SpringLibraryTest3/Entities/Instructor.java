@@ -1,6 +1,7 @@
 package com.example.SpringLibraryTest3.Entities;
 
 import com.example.SpringLibraryTest3.Enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;

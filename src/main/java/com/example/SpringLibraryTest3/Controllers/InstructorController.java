@@ -2,10 +2,12 @@ package com.example.SpringLibraryTest3.Controllers;
 
 import com.example.SpringLibraryTest3.Dto.CreateCourseDto;
 import com.example.SpringLibraryTest3.Dto.InstructorLoginDto;
+import com.example.SpringLibraryTest3.Dto.InstructorProfileDto;
 import com.example.SpringLibraryTest3.Dto.InstructorSignUpDto;
 import com.example.SpringLibraryTest3.Entities.Instructor;
 import com.example.SpringLibraryTest3.Entities.Student;
 import com.example.SpringLibraryTest3.Services.InstructorService;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,25 +32,31 @@ public class InstructorController {
         return instructorService.LoginInstructor(loginData);
     }
 
-    @PostMapping("/{instructorId}/courses")
-    public ResponseEntity<String> createCourse(@PathVariable int instructorId, @RequestBody CreateCourseDto courseDto) {
+    @PostMapping("/create-course/{instructorId}")
+    public ResponseEntity<String> createCourse(@RequestBody CreateCourseDto courseDto, @PathVariable("instructorId") int instructorId) {
         return instructorService.CreateCourse(courseDto, instructorId);
     }
 
-    @PutMapping("updateCourse/{id}")
+    @PutMapping("update-course/{id}")
     public ResponseEntity<String> UpdateCourse(@PathVariable("id") int id, @RequestBody CreateCourseDto courseData) {
         return instructorService.UpdateCourse(id, courseData);
 
     }
 
-    @DeleteMapping("deleteCourse/{id}")
+    @DeleteMapping("delete-course/{id}")
     public ResponseEntity<String> deleteCourse(@PathVariable("id") int id) {
         return instructorService.deleteCourse(id);
 
     }
 
     @GetMapping("/profile/{instructorId}")
-    public ResponseEntity<Instructor> getInstructorProfile(@PathVariable int instructorId) {
+    public ResponseEntity<InstructorProfileDto> getInstructorProfile(@PathVariable int instructorId) {
         return instructorService.getInstructorProfile(instructorId);
     }
+
+    @GetMapping("sales/{courseId}")
+    public ResponseEntity<String> getCourseSales(@PathVariable("courseId") int id) {
+        return instructorService.getCourseSales(id);
+    }
+
 }

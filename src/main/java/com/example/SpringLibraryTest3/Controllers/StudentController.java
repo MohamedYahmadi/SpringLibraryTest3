@@ -1,6 +1,7 @@
 package com.example.SpringLibraryTest3.Controllers;
 
 import com.example.SpringLibraryTest3.Dto.AddbalanceDto;
+import com.example.SpringLibraryTest3.Dto.CourseDto;
 import com.example.SpringLibraryTest3.Dto.StudentLoginDto;
 import com.example.SpringLibraryTest3.Dto.StudentSignUpDto;
 import com.example.SpringLibraryTest3.Entities.Courses;
@@ -31,8 +32,8 @@ public class StudentController {
     public ResponseEntity<String> loginStudent(@RequestBody StudentLoginDto loginData) {
         return studentService.loginStudent(loginData);
     }
-    @GetMapping("/allCourses")
-    public List<Courses> getAllCourse() {
+    @GetMapping("/all-courses")
+    public ResponseEntity<List<CourseDto>> getAllCourse() {
         return studentService.getAllCourse();
     }
 

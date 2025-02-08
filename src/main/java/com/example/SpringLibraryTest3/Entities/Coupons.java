@@ -7,7 +7,7 @@ import java.util.UUID;
 public class Coupons {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
+    private int id;
     private String code;
     private double discountPercentage;
     private int maxUse;
@@ -19,11 +19,11 @@ public class Coupons {
     public Coupons() {
     }
 
-    public UUID getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(int id) {
         this.id = id;
     }
 
