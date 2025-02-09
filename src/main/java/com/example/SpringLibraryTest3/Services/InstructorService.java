@@ -159,4 +159,14 @@ public class InstructorService {
         }
     }
 
+    public ResponseEntity<String> deleteCoupon(int couponId) {
+        Optional<Coupons> couponOptional = couponRepository.findById(couponId);
+        if (couponOptional.isPresent()) {
+            couponRepository.deleteById(couponId);
+            return ResponseEntity.ok("Coupon deleted successfully");
+        } else {
+            return ResponseEntity.status(404).body("Coupon not found");
+        }
+    }
+
 }

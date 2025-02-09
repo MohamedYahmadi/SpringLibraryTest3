@@ -61,4 +61,11 @@ public class InstructorController {
         return instructorService.createCoupon(couponDto, instructorId);
     }
 
+
+
+    @DeleteMapping("/delete-coupon/{couponId}")
+    public ResponseEntity<String> deleteCoupon(@PathVariable int couponId) {
+        return instructorService.deleteCoupon(couponId);
+    }
+
 }
