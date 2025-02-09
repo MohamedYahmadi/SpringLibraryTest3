@@ -1,6 +1,5 @@
 package com.example.SpringLibraryTest3.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.List;
 

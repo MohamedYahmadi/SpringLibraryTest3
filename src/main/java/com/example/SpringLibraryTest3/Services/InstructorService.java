@@ -1,13 +1,12 @@
 package com.example.SpringLibraryTest3.Services;
 
-import com.example.SpringLibraryTest3.Dto.CreateCourseDto;
-import com.example.SpringLibraryTest3.Dto.InstructorLoginDto;
-import com.example.SpringLibraryTest3.Dto.InstructorProfileDto;
-import com.example.SpringLibraryTest3.Dto.InstructorSignUpDto;
+import com.example.SpringLibraryTest3.Dto.*;
+import com.example.SpringLibraryTest3.Entities.Coupons;
 import com.example.SpringLibraryTest3.Entities.Courses;
 import com.example.SpringLibraryTest3.Entities.Instructor;
 import com.example.SpringLibraryTest3.Entities.Student;
 import com.example.SpringLibraryTest3.Enums.UserRole;
+import com.example.SpringLibraryTest3.Repositories.CouponRepository;
 import com.example.SpringLibraryTest3.Repositories.CourseRepository;
 import com.example.SpringLibraryTest3.Repositories.InstructorRepository;
 import com.example.SpringLibraryTest3.Repositories.StudentRepository;
@@ -23,12 +22,13 @@ public class InstructorService {
     private final InstructorRepository instructorRepository;
     private final CourseRepository courseRepository;
     private final StudentRepository studentRepository;
-
+    private final CouponRepository couponRepository;
     @Autowired
-    public InstructorService(InstructorRepository instructorRepository, CourseRepository courseRepository, StudentRepository studentRepository) {
+    public InstructorService(InstructorRepository instructorRepository, CourseRepository courseRepository, StudentRepository studentRepository, Coupons coupons, CouponRepository couponRepository) {
         this.instructorRepository = instructorRepository;
         this.courseRepository = courseRepository;
         this.studentRepository = studentRepository;
+        this.couponRepository = couponRepository;
     }
 
 
@@ -134,11 +134,29 @@ public class InstructorService {
         if (courses.isEmpty()) {
             return ResponseEntity.status(404).body("course not found");
         }
-
         int sales = courses.get().getStudents().size();
-
         return ResponseEntity.status(200).body("Sales : " + sales);
 
    }
+    public ResponseEntity<String> createCoupon(CouponDto couponDto, int instructorId) {
+        Optional<Instructor> instructorOptional = instructorRepository.findById(instructorId);
+        if (instructorOptional.isEmpty()) {
+            return ResponseEntity.status(404).body("Instructor not found");
+        }
+
+        Optional<Courses> courseOptional = courseRepository.findById(couponDto.getCourseId());
+        if (courseOptional.isPresent()) {
+            Courses course = courseOptional.get();
+            Coupons coupon = new Coupons();
+            coupon.setCourses(course);
+            coupon.setCode(couponDto.getCode());
+            coupon.setDiscountPercentage(couponDto.getDiscountPercentage());
+            coupon.setMaxUse(couponDto.getMaxUse());
+            couponRepository.save(coupon);
+            return ResponseEntity.ok("Coupon created successfully");
+        } else {
+            return ResponseEntity.status(404).body("Course not found");
+        }
+    }
 
 }

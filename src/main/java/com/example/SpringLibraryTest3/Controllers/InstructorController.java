@@ -1,9 +1,6 @@
 package com.example.SpringLibraryTest3.Controllers;
 
-import com.example.SpringLibraryTest3.Dto.CreateCourseDto;
-import com.example.SpringLibraryTest3.Dto.InstructorLoginDto;
-import com.example.SpringLibraryTest3.Dto.InstructorProfileDto;
-import com.example.SpringLibraryTest3.Dto.InstructorSignUpDto;
+import com.example.SpringLibraryTest3.Dto.*;
 import com.example.SpringLibraryTest3.Entities.Instructor;
 import com.example.SpringLibraryTest3.Entities.Student;
 import com.example.SpringLibraryTest3.Services.InstructorService;
@@ -57,6 +54,11 @@ public class InstructorController {
     @GetMapping("sales/{courseId}")
     public ResponseEntity<String> getCourseSales(@PathVariable("courseId") int id) {
         return instructorService.getCourseSales(id);
+    }
+
+    @PostMapping("/create-coupon/{instructorId}")
+    public ResponseEntity<String> createCoupon(@RequestBody CouponDto couponDto, @PathVariable int instructorId) {
+        return instructorService.createCoupon(couponDto, instructorId);
     }
 
 }

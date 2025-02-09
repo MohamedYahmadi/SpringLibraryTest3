@@ -13,6 +13,7 @@ import java.util.List;
 public class Instructor extends Users {
     private String bio;
     @OneToMany(mappedBy = "instructor")
+    @JsonIgnore
     private List<Courses> courses;
 
     public Instructor() {

@@ -6,9 +6,12 @@ import com.example.SpringLibraryTest3.Entities.Student;
 import com.example.SpringLibraryTest3.Enums.UserRole;
 import com.example.SpringLibraryTest3.Repositories.CourseRepository;
 import com.example.SpringLibraryTest3.Repositories.StudentRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,14 +107,80 @@ public class StudentService {
             return ResponseEntity.status(404).body(null);
         }
     }
-    public ResponseEntity<Courses>getCourseByName(String title){
-            Optional<Courses>coursesOptional=courseRepository.findByTitle(title);
-            if (coursesOptional.isPresent()){
-                return ResponseEntity.ok(coursesOptional.get());
 
-            }else{
-                return ResponseEntity.status(404).body(null);
-            }
+    public ResponseEntity<Courses> getCourseByName(String title) {
+        Optional<Courses> coursesOptional = courseRepository.findByTitle(title);
+        if (coursesOptional.isPresent()) {
+            return ResponseEntity.ok(coursesOptional.get());
+        } else {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
-}
+    public ResponseEntity<List<CourseDto>> getCourseByCategory(String category) {
+        List<Courses> courses = courseRepository.findByCategory(category);
+        List<CourseDto> courseResponse = new ArrayList<>();
+        courses.forEach(course -> {
+            CourseDto courseData = new CourseDto(
+                    course.getId(),
+                    course.getTitle(),
+                    course.getDescription(),
+                    course.getPrice(),
+                    course.getCategory(),
+                    course.getInstructor().getFirstName(),
+                    course.getInstructor().getLastName(),
+                    course.getInstructor().getEmail()
+            );
+            courseResponse.add(courseData);
+        });
+
+        return ResponseEntity.ok(courseResponse);
+    }
+
+    public ResponseEntity<List<CourseDto>> getCoursesByPriceRange(double minPrice, double maxPrice) {
+        List<Courses> courses = courseRepository.findByPriceBetween(minPrice, maxPrice);
+        List<CourseDto> courseResponse = new ArrayList<>();
+        courses.forEach(course -> {
+            CourseDto courseData = new CourseDto(
+                    course.getId(),
+                    course.getTitle(),
+                    course.getDescription(),
+                    course.getPrice(),
+                    course.getCategory(),
+                    course.getInstructor().getFirstName(),
+                    course.getInstructor().getLastName(),
+                    course.getInstructor().getEmail()
+            );
+            courseResponse.add(courseData);
+        });
+        return ResponseEntity.ok(courseResponse);
+    }
+
+    public ResponseEntity<String> buyCourse(int studentId, int courseId) {
+        Optional<Student> studentOptional = studentRepository.findById(studentId);
+        Optional<Courses> courseOptional = courseRepository.findById(courseId);
+
+        if (studentOptional.isEmpty()) {
+            return ResponseEntity.status(404).body("Student not found");
+        }
+
+        if (courseOptional.isEmpty()) {
+            return ResponseEntity.status(404).body("Course not found");
+        }
+
+        Student student = studentOptional.get();
+        Courses course = courseOptional.get();
+
+        if (student.getAccountBalance() < course.getPrice()) {
+            return ResponseEntity.status(400).body("Insufficient balance to buy the course");
+        }
+
+        student.setAccountBalance(student.getAccountBalance() - course.getPrice());
+        student.getCoursesBought().add(course);
+        studentRepository.save(student);
+
+        return ResponseEntity.ok("Course purchased successfully");
+    }
+
+    }
+
