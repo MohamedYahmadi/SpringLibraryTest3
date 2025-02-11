@@ -1,17 +1,19 @@
 package com.example.SpringLibraryTest3.Services;
 
 import com.example.SpringLibraryTest3.Dto.*;
+import com.example.SpringLibraryTest3.Entities.Coupons;
 import com.example.SpringLibraryTest3.Entities.Courses;
 import com.example.SpringLibraryTest3.Entities.Student;
 import com.example.SpringLibraryTest3.Enums.UserRole;
+import com.example.SpringLibraryTest3.Repositories.CouponRepository;
 import com.example.SpringLibraryTest3.Repositories.CourseRepository;
 import com.example.SpringLibraryTest3.Repositories.StudentRepository;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +23,13 @@ import java.util.Optional;
 public class StudentService {
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
+    private final CouponRepository couponRepository;
 
     @Autowired
-    public StudentService(StudentRepository studentRepository, CourseRepository courseRepository) {
+    public StudentService(StudentRepository studentRepository, CourseRepository courseRepository, CouponRepository couponRepository) {
         this.studentRepository = studentRepository;
         this.courseRepository = courseRepository;
+        this.couponRepository = couponRepository;
     }
 
     public ResponseEntity<String> signUpStudent(StudentSignUpDto signData) {
@@ -48,10 +52,10 @@ public class StudentService {
 
         return ResponseEntity.ok("Account Created successfully");
     }
-    public ResponseEntity<String>loginStudent (StudentLoginDto loingData){
-        Student student=studentRepository.findByEmail(loingData.getEmail());
-        if (student !=null && student.getPassword().equals(loingData.getPassword())){
-            return ResponseEntity.ok("login Successfuly");
+    public ResponseEntity<String>loginStudent (StudentLoginDto loginData){
+        Student student=studentRepository.findByEmail(loginData.getEmail());
+        if (student !=null && student.getPassword().equals(loginData.getPassword())){
+            return ResponseEntity.ok("login Successfully");
 
         }else {
             return ResponseEntity.status(401).body("invalid email or password");
@@ -155,8 +159,8 @@ public class StudentService {
         });
         return ResponseEntity.ok(courseResponse);
     }
-
-    public ResponseEntity<String> buyCourse(int studentId, int courseId) {
+    @Transactional
+    public ResponseEntity<String> buyCourse(int studentId, int courseId, String code) {
         Optional<Student> studentOptional = studentRepository.findById(studentId);
         Optional<Courses> courseOptional = courseRepository.findById(courseId);
 
@@ -171,11 +175,23 @@ public class StudentService {
         Student student = studentOptional.get();
         Courses course = courseOptional.get();
 
-        if (student.getAccountBalance() < course.getPrice()) {
+        double price = course.getPrice();
+
+        if (code != null && !code.isEmpty()) {
+            Optional<Coupons> couponOptional = couponRepository.findByCodeAndCourses(code, course);
+            if (couponOptional.isPresent()) {
+                Coupons coupon = couponOptional.get();
+                price = price - (price * coupon.getDiscountPercentage() / 100);
+            } else {
+                return ResponseEntity.status(400).body("Invalid coupon code");
+            }
+        }
+
+        if (student.getAccountBalance() < price) {
             return ResponseEntity.status(400).body("Insufficient balance to buy the course");
         }
 
-        student.setAccountBalance(student.getAccountBalance() - course.getPrice());
+        student.setAccountBalance(student.getAccountBalance() - price);
         student.getCoursesBought().add(course);
         studentRepository.save(student);
 

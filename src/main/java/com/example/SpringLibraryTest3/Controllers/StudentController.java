@@ -57,12 +57,13 @@ public class StudentController {
     public ResponseEntity<List<CourseDto>> getCoursesByPriceRange(@RequestParam double minPrice, @RequestParam double maxPrice) {
         return studentService.getCoursesByPriceRange(minPrice, maxPrice);
     }
-    @PostMapping("/buyCourse/{studentId}/{courseId}")
-    public ResponseEntity<String> buyCourse(@PathVariable int studentId, @PathVariable int courseId) {
-        return studentService.buyCourse(studentId, courseId);
+
+    @PostMapping("/buy-course/{studentId}/{courseId}")
+    public ResponseEntity<String> buyCourse(@PathVariable int studentId, @PathVariable int courseId, @RequestParam(required = false) String code) {
+        return studentService.buyCourse(studentId, courseId, code);
     }
-
-
-
-
 }
+
+
+
+

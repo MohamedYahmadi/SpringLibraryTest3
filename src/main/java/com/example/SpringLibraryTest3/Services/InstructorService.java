@@ -24,7 +24,7 @@ public class InstructorService {
     private final StudentRepository studentRepository;
     private final CouponRepository couponRepository;
     @Autowired
-    public InstructorService(InstructorRepository instructorRepository, CourseRepository courseRepository, StudentRepository studentRepository, Coupons coupons, CouponRepository couponRepository) {
+    public InstructorService(InstructorRepository instructorRepository, CourseRepository courseRepository, StudentRepository studentRepository, CouponRepository couponRepository) {
         this.instructorRepository = instructorRepository;
         this.courseRepository = courseRepository;
         this.studentRepository = studentRepository;

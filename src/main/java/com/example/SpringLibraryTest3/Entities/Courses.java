@@ -1,5 +1,6 @@
 package com.example.SpringLibraryTest3.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -14,13 +15,16 @@ public class Courses {
     private String category;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "instructor_id")
     private Instructor instructor;
 
     @ManyToMany(mappedBy = "coursesBought")
+    @JsonIgnore
     private List<Student> students;
 
     @OneToMany(mappedBy = "courses")
+    @JsonIgnore
     private List<Coupons> coupons;
 
     public Courses() {
