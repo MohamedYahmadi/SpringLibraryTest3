@@ -9,9 +9,13 @@ import com.example.SpringLibraryTest3.Repositories.CouponRepository;
 import com.example.SpringLibraryTest3.Repositories.CourseRepository;
 import com.example.SpringLibraryTest3.Repositories.StudentRepository;
 
+import com.example.SpringLibraryTest3.Security.JwtSevice;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -24,12 +28,20 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
     private final CouponRepository couponRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationProvider authenticationProvider;
+    private final JwtSevice jwtService;
+
+
 
     @Autowired
-    public StudentService(StudentRepository studentRepository, CourseRepository courseRepository, CouponRepository couponRepository) {
+    public StudentService(StudentRepository studentRepository, CourseRepository courseRepository, CouponRepository couponRepository, PasswordEncoder passwordEncoder, AuthenticationProvider authenticationProvider, JwtSevice jwtService) {
         this.studentRepository = studentRepository;
         this.courseRepository = courseRepository;
         this.couponRepository = couponRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationProvider = authenticationProvider;
+        this.jwtService = jwtService;
     }
 
     public ResponseEntity<String> signUpStudent(StudentSignUpDto signData) {
@@ -37,14 +49,15 @@ public class StudentService {
         Student student = studentRepository.findByEmail(signData.getEmail());
 
         if (student != null) {
-            return ResponseEntity.status(400).body("Email already in use");
+         throw new IllegalStateException("Email already in use");
         }
+        String encodedPassword =passwordEncoder.encode(signData.getPassword());
 
         Student newStudent = new Student(
                 signData.getFirstName(),
                 signData.getLastName(),
                 signData.getEmail(),
-                signData.getPassword(),
+                encodedPassword,
                 UserRole.Student
         );
 
@@ -52,13 +65,14 @@ public class StudentService {
 
         return ResponseEntity.ok("Account Created successfully");
     }
-    public ResponseEntity<String>loginStudent (StudentLoginDto loginData){
-        Student student=studentRepository.findByEmail(loginData.getEmail());
-        if (student !=null && student.getPassword().equals(loginData.getPassword())){
-            return ResponseEntity.ok("login Successfully");
-
-        }else {
-            return ResponseEntity.status(401).body("invalid email or password");
+    public String loginStudent (StudentLoginDto loginData){
+        try {
+            authenticationProvider.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginData.getEmail(),loginData.getPassword())
+            );
+            return jwtService.createToken(loginData.getEmail());
+        }catch (Exception e){
+            return ("email or password incorrect");
         }
     }
 

@@ -29,7 +29,7 @@ public class StudentController {
     }
 
     @PostMapping("/Login")
-    public ResponseEntity<String> loginStudent(@RequestBody StudentLoginDto loginData) {
+    public String loginStudent(@RequestBody StudentLoginDto loginData) {
         return studentService.loginStudent(loginData);
     }
     @GetMapping("/all-courses")

@@ -10,9 +10,13 @@ import com.example.SpringLibraryTest3.Repositories.CouponRepository;
 import com.example.SpringLibraryTest3.Repositories.CourseRepository;
 import com.example.SpringLibraryTest3.Repositories.InstructorRepository;
 import com.example.SpringLibraryTest3.Repositories.StudentRepository;
+import com.example.SpringLibraryTest3.Security.JwtSevice;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,12 +27,19 @@ public class InstructorService {
     private final CourseRepository courseRepository;
     private final StudentRepository studentRepository;
     private final CouponRepository couponRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationProvider authenticationProvider;
+    private final JwtSevice jwtService;
+
     @Autowired
-    public InstructorService(InstructorRepository instructorRepository, CourseRepository courseRepository, StudentRepository studentRepository, CouponRepository couponRepository) {
+    public InstructorService(InstructorRepository instructorRepository, CourseRepository courseRepository, StudentRepository studentRepository, CouponRepository couponRepository, PasswordEncoder passwordEncoder, AuthenticationProvider authenticationProvider, JwtSevice jwtService) {
         this.instructorRepository = instructorRepository;
         this.courseRepository = courseRepository;
         this.studentRepository = studentRepository;
         this.couponRepository = couponRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationProvider = authenticationProvider;
+        this.jwtService = jwtService;
     }
 
 
@@ -37,28 +48,31 @@ public class InstructorService {
         Instructor instructorOptional = instructorRepository.findByEmail(signData.getEmail());
 
         if (instructorOptional != null) {
-            return ResponseEntity.ok("Account already created");
+         throw new IllegalStateException("email already in use");
         }
+        String encodedPassword =passwordEncoder.encode(signData.getPassword());
 
         Instructor instructor = new Instructor(
                 signData.getFirstName(),
                 signData.getLastName(),
                 signData.getEmail(),
-                signData.getPassword(),
+                encodedPassword,
                 UserRole.Instructor
         );
 
         instructorRepository.save(instructor);
         return ResponseEntity.ok("Account Created successfully");
     }
-    public ResponseEntity<String>LoginInstructor(InstructorLoginDto loginData){
-        Instructor instructor =instructorRepository.findByEmail(loginData.getEmail());
-        if (instructor !=null && instructor.getPassword().equals(loginData.getPassword())){
-            return ResponseEntity.ok("login Successfully");
-
-        }else {
-            return ResponseEntity.status(403).body("invalid email or password");
+    public String LoginInstructor(InstructorLoginDto loginData){
+        try {
+            authenticationProvider.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginData.getEmail(),loginData.getPassword())
+            );
+            return jwtService.createToken(loginData.getEmail());
+        }catch (Exception e){
+            return ("email or password incorrect");
         }
+
     }
    public ResponseEntity<String> CreateCourse(CreateCourseDto courseData, int instructorId) {
        Optional<Instructor> instructor = instructorRepository.findById(instructorId);

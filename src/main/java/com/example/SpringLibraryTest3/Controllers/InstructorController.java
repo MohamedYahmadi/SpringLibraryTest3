@@ -1,10 +1,7 @@
 package com.example.SpringLibraryTest3.Controllers;
 
 import com.example.SpringLibraryTest3.Dto.*;
-import com.example.SpringLibraryTest3.Entities.Instructor;
-import com.example.SpringLibraryTest3.Entities.Student;
 import com.example.SpringLibraryTest3.Services.InstructorService;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +22,7 @@ public class InstructorController {
     }
 
     @PostMapping("/Login")
-    public ResponseEntity<String> LoginInstructor(@RequestBody InstructorLoginDto loginData) {
+    public String LoginInstructor(@RequestBody InstructorLoginDto loginData) {
         return instructorService.LoginInstructor(loginData);
     }
 

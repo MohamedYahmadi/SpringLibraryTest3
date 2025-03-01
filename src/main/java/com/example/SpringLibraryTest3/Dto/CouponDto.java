@@ -1,4 +1,4 @@
-// CouponDto.java
+
     package com.example.SpringLibraryTest3.Dto;
 
     public class CouponDto {
@@ -7,7 +7,7 @@
         private double discountPercentage;
         private int maxUse;
 
-        // Getters and Setters
+        
         public int getCourseId() {
             return courseId;
         }
