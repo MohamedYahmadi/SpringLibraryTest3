@@ -45,22 +45,23 @@ public class SecurityConfig {
                             "/api/student/all-courses",
                             "/api/student/course/{title}",
                             "/api/student/courses-category/{category}",
-                            "/api/student/courses/price-range"
+                            "/api/student/courses/price-range",
+
+
+                            "/api/instructor/create-course/{instructorId}"
 
 
                     ).authenticated();
 
 
                     auth.requestMatchers("/api/student/buy-course/{studentId}/{courseId}")
-                            .hasRole("STUDENT");
+                            .hasRole("Student");
                     auth.requestMatchers(
-                            "/api/student/buy-course/{studentId}/{courseId}",
-                            "/api/instructor/create-course/{instructorId}",
                             "/api/instructor/update-course/{id}",
                             "/api/instructor/delete-course/{id}",
                             "/api/instructor/create-coupon/{instructorId}",
                             "/api/instructor/delete-coupon/{couponId}"
-                    ).hasRole("INSTRUCTOR");
+                    ).hasRole("Instructor");
 
                 })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
