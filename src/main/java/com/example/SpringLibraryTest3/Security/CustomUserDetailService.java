@@ -27,9 +27,12 @@ public class CustomUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email)  {
         Users users =userRepository.findByEmail(email)
                 .orElseThrow(()->new UsernameNotFoundException("User not found"));
-        String role ="";
-        if (users instanceof Student)role ="Student";
-        else role ="Instructor";
+        String role = "";
+        if (users instanceof Student) {
+            role = "ROLE_Student";
+        } else {
+            role = "ROLE_Instructor";
+        }
 
         return new User(
                 users.getEmail(),
